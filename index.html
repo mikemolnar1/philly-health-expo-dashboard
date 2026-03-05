@@ -1,0 +1,2609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Philadelphia Health Expo - Nonprofit Organizations Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3b82f6;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .control-group input, .control-group select {
+            padding: 10px 12px;
+            background: #262626;
+            border: 1px solid #404040;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+
+        .control-group input:focus, .control-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: #262626;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #404040;
+        }
+
+        .view-toggle button {
+            padding: 10px 16px;
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            flex: 1;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .view-toggle button.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .tier-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tier-btn {
+            padding: 8px 12px;
+            background: #262626;
+            border: 1px solid #404040;
+            color: #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .tier-btn.active {
+            background: #059669;
+            border-color: #059669;
+            color: white;
+        }
+
+        .tier-btn.tier-1.active { background: #059669; }
+        .tier-btn.tier-2.active { background: #d97706; }
+        .tier-btn.tier-3.active { background: #dc2626; }
+
+        .table-container {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #262626;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #cbd5e1;
+            border-bottom: 1px solid #404040;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th:hover {
+            background: #374151;
+        }
+
+        th.sortable::after {
+            content: ' ↕️';
+            opacity: 0.5;
+            font-size: 0.8rem;
+        }
+
+        th.sorted-asc::after {
+            content: ' ↑';
+            opacity: 1;
+            color: #3b82f6;
+        }
+
+        th.sorted-desc::after {
+            content: ' ↓';
+            opacity: 1;
+            color: #3b82f6;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        tr:hover {
+            background: #252525;
+        }
+
+        .tier-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: white;
+            min-width: 60px;
+            justify-content: center;
+        }
+
+        .tier-1 { background: #059669; }
+        .tier-2 { background: #d97706; }
+        .tier-3 { background: #dc2626; }
+
+        .cards-view {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .org-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .org-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .org-card h3 {
+            color: #3b82f6;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .org-card .details {
+            display: grid;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .org-card .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .org-card .detail-label {
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🏥 Philadelphia Health Expo</h1>
+            <p>Nonprofit Organizations Near the Convention Center</p>
+            <p style="font-size: 0.9rem; margin-top: 10px;">1101 Arch St, Philadelphia, PA 19107 • Lat: 39.9536, Lon: -75.1592</p>
+        </header>
+
+        <section class="stats" id="stats">
+            <!-- Stats will be populated by JavaScript -->
+        </section>
+
+        <section class="controls">
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="search">🔍 Search by Name</label>
+                    <input type="text" id="search" placeholder="Search organizations..." />
+                </div>
+                
+                <div class="control-group">
+                    <label for="category">🏷️ Filter by Category</label>
+                    <select id="category">
+                        <option value="">All Categories</option>
+                        <!-- Options populated by JavaScript -->
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="revenue">💰 Filter by Revenue</label>
+                    <select id="revenue">
+                        <option value="">All Revenue Levels</option>
+                        <option value="0-100000">Under $100K</option>
+                        <option value="100000-500000">$100K - $500K</option>
+                        <option value="500000-1000000">$500K - $1M</option>
+                        <option value="1000000-999999999">Over $1M</option>
+                        <option value="unknown">Revenue Unknown</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label>📍 Distance Tiers</label>
+                    <div class="tier-filter">
+                        <button class="tier-btn tier-1 active" data-tier="1">Tier 1 (0-10mi)</button>
+                        <button class="tier-btn tier-2 active" data-tier="2">Tier 2 (10-20mi)</button>
+                        <button class="tier-btn tier-3 active" data-tier="3">Tier 3 (20-30mi)</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <div class="view-toggle">
+                    <button class="active" data-view="table">📊 Table View</button>
+                    <button data-view="cards">📋 Card View</button>
+                </div>
+                <button class="btn btn-secondary" onclick="clearFilters()">🔄 Clear Filters</button>
+                <button class="btn" onclick="exportCSV()">📥 Export CSV</button>
+            </div>
+        </section>
+
+        <section id="results">
+            <div class="table-container" id="table-view">
+                <div class="table-wrapper">
+                    <table id="orgs-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-column="name">Organization Name</th>
+                                <th class="sortable" data-column="category">Category</th>
+                                <th class="sortable" data-column="city">City</th>
+                                <th class="sortable" data-column="distance_tier">Distance Tier</th>
+                                <th class="sortable" data-column="income_amount">Annual Revenue</th>
+                                <th class="sortable" data-column="asset_amount">Assets</th>
+                                <th class="sortable" data-column="ein">EIN</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Table rows populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="cards-view" id="cards-view">
+                <!-- Cards populated by JavaScript -->
+            </div>
+            
+            <div class="no-results" id="no-results" style="display: none;">
+                <p>No organizations match your current filters.</p>
+                <button class="btn" onclick="clearFilters()">Clear Filters</button>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Data sourced from ProPublica Nonprofit Explorer API • Generated for Philadelphia Health Expo</p>
+            <p>Distance tiers are estimates based on city location relative to the Convention Center</p>
+        </footer>
+    </div>
+
+    <script>
+        // Embedded nonprofit data
+        const nonprofitData = [
+  {
+    "ein": 230596940,
+    "name": "Jefferson Health Northeast",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E220",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 883577015,
+    "name": "Chh Community Health",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E22",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232368197,
+    "name": "Doylestown Health Physicians",
+    "city": "Doylestown",
+    "state": "PA",
+    "ntee_code": "E110",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232290323,
+    "name": "Jefferson Health Corporation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E120",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 231425035,
+    "name": "Mental Health Partnerships",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F030",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 231548819,
+    "name": "Central Behavioral Health",
+    "city": "Norristown",
+    "state": "PA",
+    "ntee_code": null,
+    "category": "Other",
+    "distance_tier": 2,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232368196,
+    "name": "Doylestown Health Foundation",
+    "city": "Doylestown",
+    "state": "PA",
+    "ntee_code": "E120",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 472838482,
+    "name": "Garden Of Health",
+    "city": "North Wales",
+    "state": "PA",
+    "ntee_code": "P99",
+    "category": "Community Services",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 201232580,
+    "name": "Sayre Health Center",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E21",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 233052666,
+    "name": "Health Quality Partners",
+    "city": "Doylestown",
+    "state": "PA",
+    "ntee_code": "E010",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232904262,
+    "name": "Philadelphia Health Partnership",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E110",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 202556121,
+    "name": "Health Care Access",
+    "city": "Phoenixville",
+    "state": "PA",
+    "ntee_code": "E32",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 231985544,
+    "name": "Public Health Fund",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E21Z",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 205094609,
+    "name": "Coatesville Health Developmentcorporation",
+    "city": "Coatesville",
+    "state": "PA",
+    "ntee_code": "E19",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 462655132,
+    "name": "Land Health Institute",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "C34",
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 874764622,
+    "name": "Health Educated Inc",
+    "city": "Media",
+    "state": "PA",
+    "ntee_code": "E70",
+    "category": "Health & Wellness",
+    "distance_tier": 2,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 464000864,
+    "name": "Byfaithenternal Health Care",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P50",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 222456265,
+    "name": "Montgomery Health Foundation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "H119",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 311674587,
+    "name": "Health Partners Foundation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P112",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 30401242,
+    "name": "Strengthening Health Institute",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "K40",
+    "category": "Food/Nutrition",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232657328,
+    "name": "Northeastern Health System",
+    "city": "Trevose",
+    "state": "PA",
+    "ntee_code": "E22I",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 461417152,
+    "name": "Better Health Foundation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E30",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 464203240,
+    "name": "Aspire Global Health",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P20",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232692637,
+    "name": "Health Access Network",
+    "city": "Media",
+    "state": "PA",
+    "ntee_code": "E300",
+    "category": "Health & Wellness",
+    "distance_tier": 2,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 474396726,
+    "name": "Health Africa Foundation",
+    "city": "Southampton",
+    "state": "PA",
+    "ntee_code": "P40",
+    "category": "Community Services",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 237304642,
+    "name": "Health Sciences Institute",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": null,
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 831269635,
+    "name": "Victus Health Foundation",
+    "city": "Coatesville",
+    "state": "PA",
+    "ntee_code": "E70",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 861445741,
+    "name": "Advantage Health Education",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E92",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 851649007,
+    "name": "Bertier Behavioral Health",
+    "city": "Upper Darby",
+    "state": "PA",
+    "ntee_code": "P73",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 821431833,
+    "name": "Chandler Health Resources",
+    "city": "Newtown",
+    "state": "PA",
+    "ntee_code": "E60",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 333932423,
+    "name": "Health Access Innovation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E60",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 832278102,
+    "name": "Health Ai Network",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "U40",
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 233066964,
+    "name": "Lenape Dental Health",
+    "city": "West Chester",
+    "state": "PA",
+    "ntee_code": "E60",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 333046586,
+    "name": "Salted Health Foundation",
+    "city": "Harleysville",
+    "state": "PA",
+    "ntee_code": "G20",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 922284915,
+    "name": "Shott Health Services",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E32",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 431953400,
+    "name": "Childrens Health Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "S47",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 2,
+    "has_filings": null
+  },
+  {
+    "ein": 232766661,
+    "name": "Community Behavorial Health",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F300",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 334722411,
+    "name": "Elevate Behavioral Health",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F01",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 991109210,
+    "name": "Socially Healthy",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "S20",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232379751,
+    "name": "Health Partners Plans Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": null,
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 4,
+    "has_filings": null
+  },
+  {
+    "ein": 237221025,
+    "name": "Public Health Management Corporation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F21Z",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232691968,
+    "name": "Aria Health Physician Services",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E32Z",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 237082074,
+    "name": "Greater Philadelphia Health Action",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": null,
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232244355,
+    "name": "Health Federation Of Philadelphia",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": null,
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232480701,
+    "name": "Esperanza Health Center Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E320",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 231686225,
+    "name": "Spectrum Health Service Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E70Z",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 231522060,
+    "name": "Creative Health Services Inc",
+    "city": "Pottstown",
+    "state": "PA",
+    "ntee_code": "E21Z",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 231532882,
+    "name": "Philadelphia Mental Health Clinic",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F32Z",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 233036955,
+    "name": "Urban Health Solutions Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E21",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 237318683,
+    "name": "Jefferson Health Northeast Foundation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E110",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232749089,
+    "name": "Pennsylvania Health Law Project",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E60Z",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 204248215,
+    "name": "Bustleton Mental Health Instituteinc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E32",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 832819398,
+    "name": "Level Care Health Consortium",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "S41",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 6,
+    "has_filings": null
+  },
+  {
+    "ein": 474876589,
+    "name": "Pennsylvania Health Access Network",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E60",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232912035,
+    "name": "Phoenixville Health Care Foundation",
+    "city": "Phoenixville",
+    "state": "PA",
+    "ntee_code": "E120",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232248956,
+    "name": "Women & Children's Health Services",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": null,
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 201232493,
+    "name": "Foundation For Health Equity",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "T202",
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232239131,
+    "name": "Jefferson Health Northeast System",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E21Z",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 934334484,
+    "name": "Cedcas Health And Wellness",
+    "city": "Lansdale",
+    "state": "PA",
+    "ntee_code": "E12",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232300951,
+    "name": "Nazareth Health Care Foundation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E21Z",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 222442036,
+    "name": "Kennedy Health System Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E12",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232214312,
+    "name": "Roxborough Memorial Health Foundation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E22I",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232324782,
+    "name": "Neighborhood Health Agencies Inc",
+    "city": "West Chester",
+    "state": "PA",
+    "ntee_code": null,
+    "category": "Other",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 233089034,
+    "name": "Church Health Ministries Inc",
+    "city": "Southampton",
+    "state": "PA",
+    "ntee_code": "X99",
+    "category": "Other",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 872785159,
+    "name": "Mental Health First Connects",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F01",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 821995766,
+    "name": "Access To Better Health",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P20",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 843860577,
+    "name": "Action Health Centers Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E32",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 844321748,
+    "name": "Benek Global Health Project",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "G32",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 222540851,
+    "name": "Crozer Keystone Health System",
+    "city": "Media",
+    "state": "PA",
+    "ntee_code": "E210",
+    "category": "Health & Wellness",
+    "distance_tier": 2,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 933066491,
+    "name": "Wellness Benevolent Services",
+    "city": "North Wales",
+    "state": "PA",
+    "ntee_code": "P20",
+    "category": "Community Services",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 871347992,
+    "name": "Pathways Housing Wellness Corporation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "L20",
+    "category": "Housing",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 472533025,
+    "name": "Muslim Wellness Foundation Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "R20",
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 861887093,
+    "name": "Mi Salud Wellness Center",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E70",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 853853159,
+    "name": "Optimum Bliss Wellness Center",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E32",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 920946629,
+    "name": "Seeds Of Wellness Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F30",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 334175223,
+    "name": "Keystone Mental Wellness Project",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "B90",
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 934067963,
+    "name": "Paris Fit Wellness Foundation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "O50",
+    "category": "Youth Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 830617753,
+    "name": "Pharmacy Wellness Group Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E60",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 854076794,
+    "name": "Young Generational Wellness Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "O50",
+    "category": "Youth Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 334340731,
+    "name": "Zai Active Wellness Foundation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "O50",
+    "category": "Youth Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232610538,
+    "name": "Behavioral Wellness Center At Girard",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E210",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232344729,
+    "name": "Pottstown Area Health & Wellness Foundation",
+    "city": "Pottstown",
+    "state": "PA",
+    "ntee_code": "E120",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 392656446,
+    "name": "Community Wellness Coalition Recovery Home",
+    "city": "Bryn Mawr",
+    "state": "PA",
+    "ntee_code": "F22",
+    "category": "Mental Health",
+    "distance_tier": 2,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 393582894,
+    "name": "First Responder Health & Wellness Prevention",
+    "city": "Bryn Mawr",
+    "state": "PA",
+    "ntee_code": "F30",
+    "category": "Mental Health",
+    "distance_tier": 2,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 333052961,
+    "name": "Wellness Foundation For Dementia Caregivers",
+    "city": "Upper Darby",
+    "state": "PA",
+    "ntee_code": "E60",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 861975976,
+    "name": "South Philly East Health And Wellness",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E32",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 814438239,
+    "name": "Heres To Health Wellness Association",
+    "city": "Doylestown",
+    "state": "PA",
+    "ntee_code": "W12",
+    "category": "Other",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 843863129,
+    "name": "Michael Karayannis Waves To Wellness Foundation",
+    "city": "Bryn Mawr",
+    "state": "PA",
+    "ntee_code": "F20",
+    "category": "Mental Health",
+    "distance_tier": 2,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 384114218,
+    "name": "Delaware Valley Medical Student Wellness Collaborative",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": null,
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 472577281,
+    "name": "Gentle Force Wellness Treatment Facility Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F50",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 822003448,
+    "name": "Roots2 Rise Wellness A Nonprofit Corporation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E70",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 811846181,
+    "name": "Royal Spoil Academy Of Beauty & Wellness",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P20",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 991688351,
+    "name": "Back 2 Healthy Foundation Of Wellness",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P20",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 205386626,
+    "name": "La Placita Wellness And Education Center Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P50",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 861211132,
+    "name": "Alliance Of Divine Love Inc Affiliate Chapel 2156",
+    "city": "Southampton",
+    "state": "PA",
+    "ntee_code": null,
+    "category": "Other",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "wellness",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 210689826,
+    "name": "Mental Health Association In Southwestern Nj",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F80Z",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "mental health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 231744721,
+    "name": "West Philadelphia Community Mental Health Consortium Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F32",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "mental health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 813458905,
+    "name": "Friends Of The Montgomery County Veterans Treatment & Mental Health",
+    "city": "Norristown",
+    "state": "PA",
+    "ntee_code": "I40",
+    "category": "Other",
+    "distance_tier": 2,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "mental health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 824592824,
+    "name": "Homes 2 Home Youth Services",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P20",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "youth services",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 932563941,
+    "name": "Pledge Family And Youth Services",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P20",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "youth services",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 993189623,
+    "name": "Youth Development And Adolescent Services",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "O51",
+    "category": "Youth Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "youth services",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 994989445,
+    "name": "Education Arts And Sports For Youth Services   Easy Services",
+    "city": "King Of Prussia",
+    "state": "PA",
+    "ntee_code": "O50",
+    "category": "Youth Services",
+    "distance_tier": 2,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "youth services",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 853978749,
+    "name": "Forget Me Knot Children And Youth Services",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P20",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "youth services",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 300074790,
+    "name": "Children And Youth Services Of Delaware County Citizens Advisory",
+    "city": "Upper Darby",
+    "state": "PA",
+    "ntee_code": "P30",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "youth services",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 853965349,
+    "name": "Tricounty Athletics",
+    "city": "Warminster",
+    "state": "PA",
+    "ntee_code": "N50",
+    "category": "Other",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "youth services",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 861441357,
+    "name": "Bainbridge Community Health Systems Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P20",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 371425848,
+    "name": "Community Health And Education Outreach",
+    "city": "Yeadon",
+    "state": "PA",
+    "ntee_code": null,
+    "category": "Other",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232255265,
+    "name": "Community Mental Health Services Inc",
+    "city": "Downingtown",
+    "state": "PA",
+    "ntee_code": null,
+    "category": "Other",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 271313476,
+    "name": "Wes Community Health Services Nfp",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E60",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232157140,
+    "name": "Quality Community Health Care Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E320",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 331683806,
+    "name": "Shi Community Mental Health Counseling",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F32",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 202764402,
+    "name": "Community Health And Dental Care Inc",
+    "city": "Pottstown",
+    "state": "PA",
+    "ntee_code": "E20",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 844157813,
+    "name": "Nu Hope Health And Community Services",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F20",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 882468890,
+    "name": "Pa Community Health Outreach Project Inc",
+    "city": "Bensalem",
+    "state": "PA",
+    "ntee_code": "E60",
+    "category": "Health & Wellness",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 352401401,
+    "name": "Community Health And Gardens Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "Z99",
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 810960914,
+    "name": "M K Reed Community And Health Center",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P20",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 861576321,
+    "name": "Long Live Love Home Health & Community Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E92",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 994611402,
+    "name": "Resources For Empowerment Abundance And Community Health",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P32",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232122836,
+    "name": "Community Council For Mental Health & Mental Retardation Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "F33Z",
+    "category": "Mental Health",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 881279097,
+    "name": "Spectrum Foundation For Health Equity And Community Impact",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "T11",
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 231533967,
+    "name": "Northeast Community Center For Mental Health Mental Retardation I",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "P82Z",
+    "category": "Disability Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 851226523,
+    "name": "Hearts Of Humanity Community Development Corporation",
+    "city": "Pottstown",
+    "state": "PA",
+    "ntee_code": "K20",
+    "category": "Food/Nutrition",
+    "distance_tier": 3,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 823334044,
+    "name": "Morthouse Heart Community Development",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "S20",
+    "category": "Community Services",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 872104026,
+    "name": "Heart & Soul Community Development Corporation",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "Z99",
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 814137295,
+    "name": "Heart Of The Father Community Outreach Ministry",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "X99",
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 232760086,
+    "name": "Albert Einstein Healthcare Network",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "E120",
+    "category": "Health & Wellness",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "community health",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 991377727,
+    "name": "Food Bank Of Delaware County",
+    "city": "Media",
+    "state": "PA",
+    "ntee_code": "K31",
+    "category": "Food/Nutrition",
+    "distance_tier": 2,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "food bank",
+    "subseccd": 3,
+    "has_filings": null
+  },
+  {
+    "ein": 472531069,
+    "name": "Fresh Start Food Bank Inc",
+    "city": "Philadelphia",
+    "state": "PA",
+    "ntee_code": "I40",
+    "category": "Other",
+    "distance_tier": 1,
+    "income_amount": 0,
+    "asset_amount": 0,
+    "found_via": "food bank",
+    "subseccd": 3,
+    "has_filings": null
+  }
+];
+        
+        let filteredData = [...nonprofitData];
+        let currentSort = { column: null, direction: 'asc' };
+        let activeTiers = new Set(['1', '2', '3']);
+        let currentView = 'table';
+
+        // Initialize the dashboard
+        function init() {
+            updateStats();
+            populateCategoryFilter();
+            renderTable();
+            setupEventListeners();
+        }
+
+        function updateStats() {
+            const stats = calculateStats(nonprofitData);
+            const statsContainer = document.getElementById('stats');
+            
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total}</div>
+                    <div class="stat-label">Total Organizations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.tier1}</div>
+                    <div class="stat-label">Tier 1 (0-10mi)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.tier2}</div>
+                    <div class="stat-label">Tier 2 (10-20mi)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.tier3}</div>
+                    <div class="stat-label">Tier 3 (20-30mi)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.categories}</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.avgRevenue}</div>
+                    <div class="stat-label">Avg Revenue</div>
+                </div>
+            `;
+        }
+
+        function calculateStats(data) {
+            const total = data.length;
+            const tier1 = data.filter(org => org.distance_tier === 1).length;
+            const tier2 = data.filter(org => org.distance_tier === 2).length;
+            const tier3 = data.filter(org => org.distance_tier === 3).length;
+            
+            const categories = new Set(data.map(org => org.category)).size;
+            
+            const revenueData = data.filter(org => org.income_amount > 0);
+            const avgRevenue = revenueData.length > 0 
+                ? formatCurrency(revenueData.reduce((sum, org) => sum + org.income_amount, 0) / revenueData.length)
+                : 'N/A';
+            
+            return { total, tier1, tier2, tier3, categories, avgRevenue };
+        }
+
+        function populateCategoryFilter() {
+            const categories = [...new Set(nonprofitData.map(org => org.category))].sort();
+            const categorySelect = document.getElementById('category');
+            
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categorySelect.appendChild(option);
+            });
+        }
+
+        function setupEventListeners() {
+            // Search input
+            document.getElementById('search').addEventListener('input', filterData);
+            
+            // Category filter
+            document.getElementById('category').addEventListener('change', filterData);
+            
+            // Revenue filter
+            document.getElementById('revenue').addEventListener('change', filterData);
+            
+            // Tier filters
+            document.querySelectorAll('.tier-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const tier = e.target.dataset.tier;
+                    if (activeTiers.has(tier)) {
+                        activeTiers.delete(tier);
+                        e.target.classList.remove('active');
+                    } else {
+                        activeTiers.add(tier);
+                        e.target.classList.add('active');
+                    }
+                    filterData();
+                });
+            });
+            
+            // View toggle
+            document.querySelectorAll('.view-toggle button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentView = e.target.dataset.view;
+                    toggleView();
+                });
+            });
+            
+            // Table sorting
+            document.querySelectorAll('.sortable').forEach(th => {
+                th.addEventListener('click', (e) => {
+                    const column = e.target.dataset.column;
+                    sortTable(column);
+                });
+            });
+        }
+
+        function filterData() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const selectedCategory = document.getElementById('category').value;
+            const selectedRevenue = document.getElementById('revenue').value;
+            
+            filteredData = nonprofitData.filter(org => {
+                // Search filter
+                const matchesSearch = !searchTerm || 
+                    org.name.toLowerCase().includes(searchTerm) ||
+                    org.city.toLowerCase().includes(searchTerm);
+                
+                // Category filter
+                const matchesCategory = !selectedCategory || org.category === selectedCategory;
+                
+                // Revenue filter
+                let matchesRevenue = true;
+                if (selectedRevenue) {
+                    if (selectedRevenue === 'unknown') {
+                        matchesRevenue = !org.income_amount || org.income_amount === 0;
+                    } else {
+                        const [min, max] = selectedRevenue.split('-').map(Number);
+                        matchesRevenue = org.income_amount >= min && org.income_amount <= max;
+                    }
+                }
+                
+                // Tier filter
+                const matchesTier = activeTiers.has(org.distance_tier.toString());
+                
+                return matchesSearch && matchesCategory && matchesRevenue && matchesTier;
+            });
+            
+            renderCurrentView();
+        }
+
+        function sortTable(column) {
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'asc';
+            }
+            
+            filteredData.sort((a, b) => {
+                let valueA = a[column];
+                let valueB = b[column];
+                
+                // Handle numeric columns
+                if (column === 'income_amount' || column === 'asset_amount' || column === 'distance_tier' || column === 'ein') {
+                    valueA = Number(valueA) || 0;
+                    valueB = Number(valueB) || 0;
+                } else {
+                    valueA = (valueA || '').toString().toLowerCase();
+                    valueB = (valueB || '').toString().toLowerCase();
+                }
+                
+                if (valueA < valueB) return currentSort.direction === 'asc' ? -1 : 1;
+                if (valueA > valueB) return currentSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            updateSortHeaders();
+            renderCurrentView();
+        }
+
+        function updateSortHeaders() {
+            document.querySelectorAll('.sortable').forEach(th => {
+                th.className = 'sortable';
+                if (th.dataset.column === currentSort.column) {
+                    th.classList.add(currentSort.direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                }
+            });
+        }
+
+        function renderCurrentView() {
+            if (currentView === 'table') {
+                renderTable();
+            } else {
+                renderCards();
+            }
+        }
+
+        function toggleView() {
+            const tableView = document.getElementById('table-view');
+            const cardsView = document.getElementById('cards-view');
+            
+            if (currentView === 'table') {
+                tableView.style.display = 'block';
+                cardsView.style.display = 'none';
+                renderTable();
+            } else {
+                tableView.style.display = 'none';
+                cardsView.style.display = 'grid';
+                renderCards();
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            const noResults = document.getElementById('no-results');
+            
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '';
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+            
+            tbody.innerHTML = filteredData.map(org => `
+                <tr>
+                    <td><strong>${escapeHtml(org.name)}</strong></td>
+                    <td>${escapeHtml(org.category)}</td>
+                    <td>${escapeHtml(org.city)}</td>
+                    <td><span class="tier-badge tier-${org.distance_tier}">Tier ${org.distance_tier}</span></td>
+                    <td>${formatCurrency(org.income_amount)}</td>
+                    <td>${formatCurrency(org.asset_amount)}</td>
+                    <td>${org.ein}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderCards() {
+            const cardsView = document.getElementById('cards-view');
+            const noResults = document.getElementById('no-results');
+            
+            if (filteredData.length === 0) {
+                cardsView.innerHTML = '';
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+            
+            cardsView.innerHTML = filteredData.map(org => `
+                <div class="org-card">
+                    <h3>${escapeHtml(org.name)}</h3>
+                    <div class="details">
+                        <div class="detail-row">
+                            <span class="detail-label">Category:</span>
+                            <span>${escapeHtml(org.category)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Location:</span>
+                            <span>${escapeHtml(org.city)}, ${org.state}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Distance:</span>
+                            <span class="tier-badge tier-${org.distance_tier}">Tier ${org.distance_tier}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Revenue:</span>
+                            <span>${formatCurrency(org.income_amount)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Assets:</span>
+                            <span>${formatCurrency(org.asset_amount)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">EIN:</span>
+                            <span>${org.ein}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Found via:</span>
+                            <span>${escapeHtml(org.found_via)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function clearFilters() {
+            document.getElementById('search').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('revenue').value = '';
+            
+            activeTiers = new Set(['1', '2', '3']);
+            document.querySelectorAll('.tier-btn').forEach(btn => {
+                btn.classList.add('active');
+            });
+            
+            filteredData = [...nonprofitData];
+            renderCurrentView();
+        }
+
+        function exportCSV() {
+            const headers = ['Organization Name', 'Category', 'City', 'State', 'Distance Tier', 'Annual Revenue', 'Assets', 'EIN', 'NTEE Code', 'Found Via'];
+            const csvContent = [
+                headers.join(','),
+                ...filteredData.map(org => [
+                    `"${org.name.replace(/"/g, '""')}"`,
+                    `"${org.category.replace(/"/g, '""')}"`,
+                    `"${org.city}"`,
+                    org.state,
+                    org.distance_tier,
+                    org.income_amount || 0,
+                    org.asset_amount || 0,
+                    org.ein,
+                    `"${org.ntee_code || ''}"`,
+                    `"${org.found_via}"`
+                ].join(','))
+            ].join('\\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `philadelphia-health-expo-nonprofits-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function formatCurrency(amount) {
+            if (!amount || amount === 0) return 'N/A';
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
